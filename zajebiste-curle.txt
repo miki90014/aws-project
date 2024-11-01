@@ -1,0 +1,4 @@
+curl -X POST http://127.0.0.1:5000/signup --data '{"username":"test", "password":"123123123", "email":"tinusia09@gmail.com"}' -H "Content-Type: application/json"
+
+
+curl -X POST http://127.0.0.1:5000/login --data '{"username": "test", "password":"123123123"}' -H "Content-Type: application/json"

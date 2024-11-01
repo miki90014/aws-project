@@ -5,5 +5,3 @@ export BACKEND_PORT=5000
 export EXPOSED_FRONTEND_PORT=80
 export WORKSPACE="/home/ubuntu/src"
 export AWS_REGION="us-east-1"
-export AWS_SECRET_ACESS_KEY=""
-export AWS_ACCESS_KEY_ID=""

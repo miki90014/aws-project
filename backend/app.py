@@ -17,13 +17,9 @@ rooms_details = {}
 region = os.getenv('AWS_REGION')
 app_client_id = os.getenv('COGNITO_CLIENT_ID')
 user_pool_id = os.getenv('COGNITO_POOL_ID')
-access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
-secret_access_key= os.getenv('AWS_SECRET_ACESS_KEY')
 
 cognito_client = boto3.client('cognito-idp', 
-                              region_name=region, 
-                              aws_access_key_id=access_key_id,
-                              aws_secret_access_key=secret_access_key)
+                              region_name=region)
 
 def get_jwk(jwks_url):
     jwks = requests.get(jwks_url).json()
@@ -144,7 +140,7 @@ def logout():
 def list_cognito_users():
     try:
         users = []
-        response = cognito_client.list_users(UserPoolId=user_pool_id)
+        response = cognito_client.list_users(UserPoolId=user_pool_id, ClientId=app_client_id)
 
         print(response)
         users = response['Users']
