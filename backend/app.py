@@ -140,19 +140,20 @@ def logout():
 def list_cognito_users():
     try:
         users = []
-        response = cognito_client.list_users(UserPoolId=user_pool_id, ClientId=app_client_id)
+        response = cognito_client.list_users(UserPoolId=user_pool_id)
 
         print(response)
         users = response['Users']
 
         user_list = []
         for user in users:
-            user_info = {
-                'Username': user['Username']
-            }
-            user_list.append(user_info)
+            user_list.append(user['Username'])
+        
+        user_info = {
+            'UsernameList': user_list
+        }
 
-        return jsonify(user_list), 200
+        return jsonify(user_info), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

@@ -27,6 +27,10 @@ resource "aws_instance" "proj_ec2_build" {
     cat <<-'BUILDEOF' > /home/ubuntu/build.sh
     ${file("../scripts/build.sh")}
     BUILDEOF
+    mkdir /home/ubuntu/.aws
+    cat <<-'AWSCREDENTIALS' > /home/ubuntu/.aws/credentials
+    ${file("C:/Users/Monik/.aws/credentials")}
+    AWSCREDENTIALS
     chmod +x /home/ubuntu/build.sh
     # Dodanie zmiennych środowiskowych
     echo "export COGNITO_POOL_ID=${aws_cognito_user_pool.user_pool.id}" >> /home/ubuntu/.bashrc
