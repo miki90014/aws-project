@@ -31,6 +31,7 @@ resource "aws_instance" "proj_ec2_build" {
     # Dodanie zmiennych środowiskowych
     echo "export COGNITO_POOL_ID=${aws_cognito_user_pool.user_pool.id}" >> /home/ubuntu/.bashrc
     echo "export COGNITO_CLIENT_ID=${aws_cognito_user_pool_client.cognito_client.id}" >> /home/ubuntu/.bashrc
+    source /home/ubuntu/.bashrc
     /home/ubuntu/build.sh
 
   USERDATAEOF

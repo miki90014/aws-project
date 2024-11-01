@@ -5,6 +5,8 @@ services:
       context: ./backend
       args:
         BACKEND_PORT: ${BACKEND_PORT}
+    ports:                                #Do usunięcia po debugowaniu
+      - "${BACKEND_PORT}:${BACKEND_PORT}" #Do usunięcia po debugowaniu
     env_file:
       - .env
     
