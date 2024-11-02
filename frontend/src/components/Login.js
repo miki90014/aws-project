@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../api';
 
 function Login() {
@@ -9,7 +10,17 @@ function Login() {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await api.post('/login', { username, password });
+            const response = await api.post('/login', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  username,
+                  password
+                })
+              });
+            console.log(response.data)
             localStorage.setItem('accessToken', response.data.AccessToken);
             setMessage("Login successful!");
             window.location.href = '/dashboard';
@@ -26,6 +37,11 @@ function Login() {
                 <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} required />
                 <button type="submit">Login</button>
             </form>
+            <br></br>
+            <p>
+                You don't have an account? <Link to="/signup">Sign Up</Link>
+            </p>
+            <br></br>
             {message && <p>{message}</p>}
         </div>
     );
