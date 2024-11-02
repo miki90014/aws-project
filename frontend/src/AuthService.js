@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5000';
+const API_URL = 'http://' + process.env.BACKEND_SERVICE_NAME + ':' + process.env.BACKEND_PORT;
 
 export async function signup(username, password, email) {
   const response = await fetch(`${API_URL}/signup`, {
@@ -6,6 +6,7 @@ export async function signup(username, password, email) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username, password, email }),
   });
+  console.log(response)
   return response.json();
 }
 
