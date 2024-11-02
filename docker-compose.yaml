@@ -9,6 +9,8 @@ services:
       - "${BACKEND_PORT}:${BACKEND_PORT}" #Do usunięcia po debugowaniu
     env_file:
       - .env
+    networks:
+      - app-network
     
 
   frontend:
@@ -23,3 +25,9 @@ services:
       - .env
     depends_on:
       - backend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
