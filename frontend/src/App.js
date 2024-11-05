@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { login, refreshToken, logout } from './AuthService';
 import axios from 'axios';
 
-const API_URL = 'http://backend:5000';
+const API_URL = 'http://localhost:5000';
 
 function App() {
   const [username, setUsername] = useState('');
@@ -12,23 +12,21 @@ function App() {
   const [message, setMessage] = useState('');
 
   const handleSignup = async () => {
-    try {
-      const response = await axios.post(`${API_URL}/signup`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password, email }),
-      });
+    //try {
+      const response = await axios.post(`${API_URL}/signup`, 
+        { username, password, email }, 
+        { headers: { 'Content-Type': 'text/plain'},
+        mode: 'cors' }
+      );
+      console.log("!!!!!!!!!!!!!!!!!!!!!!!!")
 
       console.log('User signed up:', username);
-      console.log(response);
-      if (response.error) {
-        setMessage(`Signup failed: ${response.error}`);
-      } else {
-        setMessage('Signup successful!');
-      }
+      console.log(response.data);
+      setMessage('Signup successful!');
+      /*
       } catch (error) {
         setMessage(`Error during signup: ${error.message}`);
-      }
+      }*/
   };
 
   const handleLogin = async () => {

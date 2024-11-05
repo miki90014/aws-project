@@ -2,15 +2,19 @@ import os
 import jwt
 import requests
 import boto3
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
+import json
 from flask_socketio import SocketIO, join_room, emit
+from flask_cors import CORS, cross_origin
 import logging
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
+
 rooms = []
 rooms_details = {}
 
@@ -47,9 +51,12 @@ def hello_world():
     return 'Hello, World!'
 
 
-@app.route('/signup', methods=['POST'])
+@app.route('/signup', methods=['POST', 'OPTIONS'])
 def signup():
-    data = request.get_json()
+    raw_data = request.data.decode('utf-8')
+    data = json.loads(raw_data)
+    logger.info(data)
+
     username = data['username']
     password = data['password']
     email = data['email']
@@ -69,7 +76,7 @@ def signup():
             ]
         )
         logger.info(f"Signup successful for username: {username}")
-        return jsonify({"message": "Signup successful"})
+        return Response("Signup successful", status=200, mimetype='text/plain')
     except Exception as e:
         logger.error(f"Error occurred during signup for username {username}: {str(e)}")
         return jsonify({"error": str(e)}), 400
@@ -77,7 +84,10 @@ def signup():
 
 @app.route('/login', methods=['POST'])
 def login():
-    data = request.get_json()
+    raw_data = request.data.decode('utf-8')
+    data = json.loads(raw_data)
+    logger.info(data)
+
     username = data['username']
     password = data['password']
 
@@ -101,7 +111,10 @@ def login():
 
 @app.route('/refresh_token', methods=['POST'])
 def refresh_token():
-    data = request.get_json()
+    raw_data = request.data.decode('utf-8')
+    data = json.loads(raw_data)
+    logger.info(data)
+    
     refresh_token = data['refreshToken']
     logger.info("Received token refresh request")
     try:
@@ -113,7 +126,8 @@ def refresh_token():
             ClientId=app_client_id
         )
         logger.info("Token refresh successful")
-        return jsonify(response["AuthenticationResult"])
+        response_message = f"Signup successful for user: {data['username']}"
+        return Response(response_message, status=200, mimetype='text/plain')
     except Exception as e:
         logger.error(f"Error occurred during token refresh: {str(e)}")
         return jsonify({"error": str(e)}), 400
