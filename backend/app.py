@@ -5,7 +5,7 @@ import boto3
 from flask import Flask, request, jsonify, Response
 import json
 from flask_socketio import SocketIO, join_room, emit
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 import logging
 
 logging.basicConfig(level=logging.INFO)

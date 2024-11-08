@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { login, refreshToken, logout } from './AuthService';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000';
+const api = axios.create({
+  baseURL: ''
+});
 
 function App() {
   const [username, setUsername] = useState('');
@@ -13,7 +15,7 @@ function App() {
 
   const handleSignup = async () => {
     //try {
-      const response = await axios.post(`${API_URL}/signup`, 
+      const response = await axios.post(`${api}/signup`, 
         { username, password, email }, 
         { headers: { 'Content-Type': 'text/plain'},
         mode: 'cors' }
