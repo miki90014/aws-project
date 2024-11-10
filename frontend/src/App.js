@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { login, refreshToken, logout } from './AuthService';
 import axios from 'axios';
 
 function App() {
@@ -23,7 +22,6 @@ function App() {
           }
         }
       );
-      console.log("!!!!!!!!!!!!!!!!!!!!!!!!")
 
       console.log('User signed up:', username);
       console.log(response.data);
@@ -35,27 +33,27 @@ function App() {
   };
 
   const handleLogin = async () => {
-    const response = await login(username, password);
-    if (response.error) {
-      setMessage(`Login failed: ${response.error}`);
-    } else {
-      setAuthData(response);
-      setMessage('Login successful!');
-    }
-  };
+    try {
+      const response = await axios.post(`/login`,
+        {
+          username,
+          password
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
 
-  const handleRefreshToken = async () => {
-    if (!authData) {
-      setMessage('No refresh token found');
-      return;
-    }
-    const response = await refreshToken(authData.RefreshToken);
-    if (response.error) {
-      setMessage(`Token refresh failed: ${response.error}`);
-    } else {
-      setAuthData(response);
-      setMessage('Token refreshed successfully!');
-    }
+      console.log('User login:', username);
+      console.log(response.data);
+      setMessage('Logged successful!');
+      setAuthData(response.data);
+      } catch (error) {
+        console.log(`Error during signup: ${error.message}`);
+        setMessage(`Error during signup: ${error.response.data.error}`);
+      }
   };
 
   const handleLogout = async () => {
@@ -63,12 +61,20 @@ function App() {
       setMessage('No user logged in');
       return;
     }
-    const response = await logout(authData.AccessToken);
-    if (response.error) {
-      setMessage(`Logout failed: ${response.error}`);
-    } else {
+    try {
+      const response = await axios.post(`/logout`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': authData.AccessToken,
+          }
+        }
+      );
       setAuthData(null);
       setMessage('Logged out successfully');
+      console.log(response.data);
+    } catch (error) {
+      setMessage(`Logout failed: ${error.response.data.error}`);
     }
   };
 
@@ -88,7 +94,6 @@ function App() {
                 <button type="button" onClick={handleSignup}>Sign Up</button>
             </form>
             <button type="button" onClick={handleLogout}>Log Out</button>
-            <button type="button" onClick={handleRefreshToken}>Refresh Token</button>
         </div>
       <p>{message}</p>
     </div>

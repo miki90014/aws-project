@@ -53,7 +53,7 @@ def hello_world():
 
 @app.route('/signup', methods=['POST'])
 def signup():
-    data = request.get_json()  # Automatyczne parsowanie danych JSON
+    data = request.get_json()
     if not data:
         return jsonify({"error": "Invalid JSON format"}), 400
 
@@ -86,12 +86,12 @@ def signup():
 
 @app.route('/login', methods=['POST'])
 def login():
-    raw_data = request.data.decode('utf-8')
-    data = json.loads(raw_data)
-    logger.info(data)
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Invalid JSON format"}), 400
 
-    username = data['username']
-    password = data['password']
+    username = data.get('username')
+    password = data.get('password')
 
     logger.info(f"Received login request for username: {username}")
 
@@ -113,11 +113,11 @@ def login():
 
 @app.route('/refresh_token', methods=['POST'])
 def refresh_token():
-    raw_data = request.data.decode('utf-8')
-    data = json.loads(raw_data)
-    logger.info(data)
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Invalid JSON format"}), 400
 
-    refresh_token = data['refreshToken']
+    refresh_token = data.get('refreshToken')
     logger.info("Received token refresh request")
     try:
         response = cognito_client.initiate_auth(
