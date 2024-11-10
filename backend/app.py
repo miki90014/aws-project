@@ -4,7 +4,7 @@ import requests
 import boto3
 from flask import Flask, request, jsonify, Response
 import json
-from flask_socketio import SocketIO, join_room, emit
+from flask_socketio import SocketIO
 from flask_cors import CORS
 import logging
 
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 CORS(app)
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*", supports_credentials=True, resources={r"/*": {"origins": "*"}}, allow_headers=["Authorization", "Content-Type"], logger=True)
 
 rooms = []
 rooms_details = {}

@@ -3,7 +3,8 @@ import { login, refreshToken, logout } from './AuthService';
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: ''
+  baseURL: '',
+  timeout: 10000
 });
 
 function App() {
@@ -14,7 +15,7 @@ function App() {
   const [message, setMessage] = useState('');
 
   const handleSignup = async () => {
-    //try {
+    try {
       const response = await axios.post(`${api}/signup`, 
         { username, password, email }, 
         { headers: { 'Content-Type': 'text/plain'},
@@ -25,10 +26,10 @@ function App() {
       console.log('User signed up:', username);
       console.log(response.data);
       setMessage('Signup successful!');
-      /*
       } catch (error) {
+        console.log(`Error during signup: ${error.message}`);
         setMessage(`Error during signup: ${error.message}`);
-      }*/
+      }
   };
 
   const handleLogin = async () => {
