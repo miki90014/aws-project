@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 CORS(app)
-socketio = SocketIO(app, cors_allowed_origins="*", supports_credentials=True, resources={r"/*": {"origins": "*"}}, allow_headers=["Authorization", "Content-Type"], logger=True)
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 rooms = []
 rooms_details = {}
@@ -22,7 +22,7 @@ region = os.getenv('AWS_REGION')
 app_client_id = os.getenv('COGNITO_CLIENT_ID')
 user_pool_id = os.getenv('COGNITO_POOL_ID')
 
-cognito_client = boto3.client('cognito-idp', 
+cognito_client = boto3.client('cognito-idp',
                               region_name=region)
 
 def get_jwk(jwks_url):
@@ -51,15 +51,17 @@ def hello_world():
     return 'Hello, World!'
 
 
-@app.route('/signup', methods=['POST', 'OPTIONS'])
+@app.route('/signup', methods=['POST'])
 def signup():
-    raw_data = request.data.decode('utf-8')
-    data = json.loads(raw_data)
+    data = request.get_json()  # Automatyczne parsowanie danych JSON
+    if not data:
+        return jsonify({"error": "Invalid JSON format"}), 400
+
     logger.info(data)
 
-    username = data['username']
-    password = data['password']
-    email = data['email']
+    username = data.get('username')
+    password = data.get('password')
+    email = data.get('email')
 
     logger.info(f"Received signup request for username: {username}")
 
@@ -76,7 +78,7 @@ def signup():
             ]
         )
         logger.info(f"Signup successful for username: {username}")
-        return Response("Signup successful", status=200, mimetype='text/plain')
+        return jsonify({"message": "Signup successful"}), 200
     except Exception as e:
         logger.error(f"Error occurred during signup for username {username}: {str(e)}")
         return jsonify({"error": str(e)}), 400
@@ -114,7 +116,7 @@ def refresh_token():
     raw_data = request.data.decode('utf-8')
     data = json.loads(raw_data)
     logger.info(data)
-    
+
     refresh_token = data['refreshToken']
     logger.info("Received token refresh request")
     try:
@@ -162,7 +164,7 @@ def list_cognito_users():
         user_list = []
         for user in users:
             user_list.append(user['Username'])
-        
+
         user_info = {
             'UsernameList': user_list
         }
@@ -171,30 +173,6 @@ def list_cognito_users():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-'''
-@socketio.on('join')
-def on_join(data):
-    access_token = data['accessToken']
-    if not access_token or validate_token(access_token) is None:
-        emit('error', {'message': 'Authentication required'})
-        return
-    client_id = data['clientId']
-    data = data['data']
-    username = data['username']
-
-    logger.info(f"User {username} with client ID {client_id} joining the room")
-
-    room = find_available_room_and_join(client_id)
-    join_room(room)
-    if rooms_details[room]["clients"][0] == client_id:
-        symbol = 'o'
-        rooms_details[room]["turn"] = 'o'
-        rooms_details[room]["table"] = [''] * 9
-    else:
-        symbol = 'x'
-    emit('joinInfo', {'roomId': room, 'symbol': symbol, 'clientId': client_id})
-'''
 
 if __name__ == '__main__':
     port = int(os.getenv('BACKEND_PORT', 5000))

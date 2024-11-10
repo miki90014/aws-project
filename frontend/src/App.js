@@ -2,11 +2,6 @@ import React, { useState } from 'react';
 import { login, refreshToken, logout } from './AuthService';
 import axios from 'axios';
 
-const api = axios.create({
-  baseURL: '',
-  timeout: 10000
-});
-
 function App() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -16,10 +11,17 @@ function App() {
 
   const handleSignup = async () => {
     try {
-      const response = await axios.post(`${api}/signup`, 
-        { username, password, email }, 
-        { headers: { 'Content-Type': 'text/plain'},
-        mode: 'cors' }
+      const response = await axios.post(`/signup`,
+        {
+          username,
+          password,
+          email
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
       );
       console.log("!!!!!!!!!!!!!!!!!!!!!!!!")
 
@@ -28,7 +30,7 @@ function App() {
       setMessage('Signup successful!');
       } catch (error) {
         console.log(`Error during signup: ${error.message}`);
-        setMessage(`Error during signup: ${error.message}`);
+        setMessage(`Error during signup: ${error.response.data.error}`);
       }
   };
 
@@ -77,16 +79,16 @@ function App() {
             <form id="login-form">
                 <input type="text" id="login-username" placeholder="Username" onChange={(e) => setUsername(e.target.value)}></input>
                 <input type="password" id="login-password" placeholder="Password" onChange={(e) => setPassword(e.target.value)}></input>
-                <button onClick={handleLogin}>Log In</button>
+                <button type="button" onClick={handleLogin}>Log In</button>
             </form>
             <form id="signup-form">
                 <input type="text" id="signup-username" placeholder="Username" onChange={(e) => setUsername(e.target.value)}></input>
                 <input type="password" id="signup-password" placeholder="Password" onChange={(e) => setPassword(e.target.value)}></input>
                 <input type="email" id="signup-email" placeholder="Email" onChange={(e) => setEmail(e.target.value)}></input>
-                <button onClick={handleSignup}>Sign Up</button>
+                <button type="button" onClick={handleSignup}>Sign Up</button>
             </form>
-            <button onClick={handleLogout}>Log Out</button>
-            <button onClick={handleRefreshToken}>Refresh Token</button>
+            <button type="button" onClick={handleLogout}>Log Out</button>
+            <button type="button" onClick={handleRefreshToken}>Refresh Token</button>
         </div>
       <p>{message}</p>
     </div>
