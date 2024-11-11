@@ -7,6 +7,7 @@ import json
 from flask_socketio import SocketIO
 from flask_cors import CORS
 import logging
+from db_handler import DatabaseHandler
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -21,6 +22,10 @@ rooms_details = {}
 region = os.getenv('AWS_REGION')
 app_client_id = os.getenv('COGNITO_CLIENT_ID')
 user_pool_id = os.getenv('COGNITO_POOL_ID')
+
+db_handler = DatabaseHandler()
+
+
 
 cognito_client = boto3.client('cognito-idp',
                               region_name=region)
