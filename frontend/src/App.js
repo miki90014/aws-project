@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
+let loggedInUsername;
+
 function App() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -49,6 +51,9 @@ function App() {
       console.log(response.data);
       setMessage('Logged successful!');
       localStorage.setItem('accessToken', response.data.AccessToken);
+      localStorage.setItem('refreshToken', response.data.RefreshToken);
+      refreshTokenFun();
+      loggedInUsername = username;
       } catch (error) {
         console.log(`Error during signup: ${error.message}`);
         setMessage(`Error during signup: ${error.response.data.error}`);
@@ -64,16 +69,42 @@ function App() {
       const response = await axios.post(`/logout`,
         {
           headers: {
-            'Content-Type': 'application/json',
             'Authorization': localStorage.getItem('accessToken'),
           }
         }
       );
       localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
       setMessage('Logged out successfully');
       console.log(response.data);
     } catch (error) {
       setMessage(`Logout failed: ${error.response.data.error}`);
+    }
+  };
+
+  const refreshTokenFun = async () =>  {
+
+    try {
+      const refreshToken = localStorage.getItem('refreshToken');
+      const response = await axios.post(`/refresh_token`,
+        {
+          refreshToken
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      console.log('Access token refreshed!');
+      console.log(response.data);
+      localStorage.setItem('accessToken', response.data.AccessToken);
+      localStorage.setItem('refreshToken', response.data.RefreshToken);
+      setTimeout(refreshTokenFun, (response.data.ExpiresIn - 280) * 1000);
+
+    } catch (error) {
+      setMessage(`Could not refresh token: ${error.response.data.error}`);
     }
   };
 

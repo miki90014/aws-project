@@ -137,9 +137,9 @@ def refresh_token():
 
 @app.route('/logout', methods=['POST'])
 def logout():
-    print(request.headers)
-    print(request)
-    access_token = request.headers.get('Authorization')
+    logger.info(request.headers)
+    access_token = request.headers.headers.get('Authorization')
+    logger.info(access_token)
     if access_token is None or validate_token(access_token) is None:
         return jsonify({"error": "Authentication required"}), 401
     try:
