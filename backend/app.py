@@ -226,8 +226,10 @@ def send_message():
         data = request.get_json()
         if not data:
             return jsonify({"error": "Invalid JSON format"}), 400
-        message = data.get('message')
-        reciever = data.get('username_reciever')
+        message = data.get('messageToSent')
+        reciever = data.get('usernameReciever')
+        if message is None or reciever is None:
+            return jsonify({"error": "Message and reciever cannot be null"}), 400
         logger.info(f"Saving send message {message} send by {username} to {reciever}")
         db_handler.insert_message(username, message, reciever)
         return jsonify({"message": "Message sent successfully"})

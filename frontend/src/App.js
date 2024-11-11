@@ -7,7 +7,7 @@ function App() {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [messageToSent, setMessageToSent] = useState('');
-  const [username_reciever, setReciever] = useState('');
+  const [usernameReciever, setReciever] = useState('');
   const [isTokenPresent, setIsTokenPresent] = useState(false);
 
   useEffect(() => {
@@ -212,7 +212,7 @@ function App() {
       const response = await axios.post(`/send_message`,
         {
           messageToSent,
-          username_reciever
+          usernameReciever
         },
         {
           headers: {
