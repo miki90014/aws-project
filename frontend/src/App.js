@@ -5,7 +5,6 @@ function App() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
-  const [authData, setAuthData] = useState(null);
   const [message, setMessage] = useState('');
 
   const handleSignup = async () => {
@@ -49,7 +48,7 @@ function App() {
       console.log('User login:', username);
       console.log(response.data);
       setMessage('Logged successful!');
-      setAuthData(response.data);
+      localStorage.setItem('accessToken', response.data.AccessToken);
       } catch (error) {
         console.log(`Error during signup: ${error.message}`);
         setMessage(`Error during signup: ${error.response.data.error}`);
@@ -57,7 +56,7 @@ function App() {
   };
 
   const handleLogout = async () => {
-    if (!authData) {
+    if (!localStorage.getItem('accessToken')) {
       setMessage('No user logged in');
       return;
     }
@@ -66,11 +65,11 @@ function App() {
         {
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': authData.AccessToken,
+            'Authorization': localStorage.getItem('accessToken'),
           }
         }
       );
-      setAuthData(null);
+      localStorage.removeItem('accessToken');
       setMessage('Logged out successfully');
       console.log(response.data);
     } catch (error) {
