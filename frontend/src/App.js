@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 let loggedInUsername;
@@ -8,6 +8,15 @@ function App() {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
+  const [isTokenPresent, setIsTokenPresent] = useState(false);
+
+  useEffect(() => {
+    // Sprawdzamy, czy accessToken jest w localStorage
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      setIsTokenPresent(true); // Ustawiamy stan, aby przycisk był widoczny
+    }
+  }, []);
 
   const handleSignup = async () => {
     try {
@@ -114,6 +123,32 @@ function App() {
     }
   };
 
+  const handleFetchingUsers = async () => {
+    if (!localStorage.getItem('accessToken')) {
+      setMessage('You must log in to fetch user list');
+      return;
+    }
+    try {
+      const authorization = localStorage.getItem('accessToken');
+      console.log(authorization)
+      const response = await axios.get(`/users`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authorization}`
+          }
+        }
+      );
+      if (response.data && response.data.UsernameList) {
+        setMessage(JSON.stringify(response.data.UsernameList, null, 2));
+      } else {
+        setMessage('No users found.');
+      }
+    } catch (error) {
+      setMessage(`Fetching users failed: ${error.response.data.error}`);
+    }
+  };
+
   return (
     <div className="App">
       <h1>Cognito Auth Frontend</h1>
@@ -130,6 +165,11 @@ function App() {
                 <button type="button" onClick={handleSignup}>Sign Up</button>
             </form>
             <button type="button" onClick={handleLogout}>Log Out</button>
+            <div>
+              {isTokenPresent && (
+                <button type="button" onClick={handleFetchingUsers}>List of Users</button>
+              )}
+            </div>
         </div>
       <p>{message}</p>
     </div>

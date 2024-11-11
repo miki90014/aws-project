@@ -157,6 +157,10 @@ def logout():
 
 @app.route('/users', methods=['GET'])
 def list_cognito_users():
+    access_token = request.headers.get('Authorization')
+    access_token = access_token[7:]
+    if not access_token or validate_token(access_token) is None:
+        return jsonify({"error": f"Authentication required: {str(e)}"}), 400
     try:
         users = []
         response = cognito_client.list_users(UserPoolId=user_pool_id)
@@ -175,7 +179,7 @@ def list_cognito_users():
         return jsonify(user_info), 200
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": f"Error occured during fetching users: {str(e)}"}), 500
 
 if __name__ == '__main__':
     port = int(os.getenv('BACKEND_PORT', 5000))

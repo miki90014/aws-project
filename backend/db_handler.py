@@ -109,6 +109,25 @@ class DatabaseHandler:
             logging.error(f"The error '{e}' occurred while fetching send messages")
             return None
 
+    def fetch_messages_recived(self, username_reciver):
+        cursor = self.connection.cursor()
+        query = f"""
+        SELECT 
+            message, username_sender, message_date
+        FROM 
+            messages
+        WHERE 
+            (username_reciver = {username_reciver});
+        """
+        try:
+            cursor.execute(query)
+            result = cursor.fetchone()
+            logging.info("Recived recived messages")
+            return result
+        except Error as e:
+            logging.error(f"The error '{e}' occurred while fetching recived messages")
+            return None
+
     def close_connection(self):
         if self.connection:
             self.connection.close()
