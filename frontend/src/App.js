@@ -9,6 +9,7 @@ function App() {
   const [messageToSent, setMessageToSent] = useState('');
   const [usernameReciever, setReciever] = useState('');
   const [isTokenPresent, setIsTokenPresent] = useState(false);
+  const [messages, setMessages] = useState([]);  
 
   useEffect(() => {
     // Sprawdzamy, czy accessToken jest w localStorage
@@ -165,12 +166,18 @@ function App() {
         }
       );
       if (response.data) {
-        setMessage("Bla bla bla");
+        console.log(response.data.messages)
+        setMessages(response.data.messages);
+        setMessage('Messages fetched successfully');
       } else {
         setMessage('No sent messeges found.');
       }
     } catch (error) {
-      setMessage(`Fetching sent messages failed: ${error.response.data.error}`);
+      if (error.response) {
+        setMessage(`Fetching sent messages failed: ${error.response.data.error}`);
+      } else {
+        setMessage(`Fetching sent messages failed: ${error}`);
+      }
     }
   };
 
@@ -191,12 +198,18 @@ function App() {
         }
       );
       if (response.data) {
-        setMessage("Bla bla bla");
+        console.log(response.data.messages)
+        setMessages(response.data.messages);
+        setMessage('Messages fetched successfully');
       } else {
         setMessage('No recived messeges found.');
       }
     } catch (error) {
-      setMessage(`Fetching recived messages failed: ${error.response.data.error}`);
+      if (error.response) {
+        setMessage(`Fetching recived messages failed: ${error.response.data.error}`);
+      } else {
+        setMessage(`Fetching recived messages failed: ${error}`);
+      }
     }
   };
 
@@ -255,6 +268,20 @@ function App() {
                   <button type="button" onClick={handleFetchingUsers}>List of Users</button>
                   <button type="button" onClick={handleFetchingSentMesseges}>List of sent messages</button>
                   <button type="button" onClick={handleFetchingRecivedMesseges}>List of recived messages</button>
+
+                  <ul>
+                    {messages.length > 0 ? (
+                      messages.map(([msg, user, date], index) => (
+                        <li key={index}>
+                          <strong>Message:</strong> {msg} <br />
+                          <strong>User:</strong> {user} <br />
+                          <strong>Date:</strong> {date}
+                        </li>
+                      ))
+                    ) : (
+                      <p>No messages to display.</p>
+                    )}
+                  </ul>
                 </React.Fragment>
               )}
             </div>

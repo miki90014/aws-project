@@ -102,7 +102,7 @@ class DatabaseHandler:
         """
         try:
             cursor.execute(query)
-            result = cursor.fetchone()
+            result = cursor.fetchall()
             logging.info("Recived sent messages")
             return result
         except Error as e:
@@ -121,7 +121,7 @@ class DatabaseHandler:
         """
         try:
             cursor.execute(query)
-            result = cursor.fetchone()
+            result = cursor.fetchall()
             logging.info("Recived recived messages")
             return result
         except Error as e:

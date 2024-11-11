@@ -191,10 +191,11 @@ def get_sent_messages():
     try:
         data = validate_token(access_token)
         username_sender = data.get('username')
-        logger.info(db_handler.fetch_messages_send(username_sender))
-        #return db_handler.fetch_messages_send(username_sender)
-        return ""
+        messages = db_handler.fetch_messages_send(username_sender)
+        logger.info(str(messages))
+        return jsonify({"messages": messages}), 200
     except Exception as e:
+        logger.error(str(e))
         return jsonify({"error": f"Error occured during fetching sent messages: {str(e)}"}), 500
 
 @app.route('/get_recieved_messages', methods=['GET'])
@@ -207,10 +208,11 @@ def get_recieved_messages():
     try:
         data = validate_token(access_token)
         username_reciever = data.get('username')
-        logger.info(db_handler.fetch_messages_recived(username_reciever))
-        #return db_handler.fetch_messages_send(username_sender)
-        return ""
+        messages = db_handler.fetch_messages_recived(username_reciever)
+        logger.info(str(messages))
+        return jsonify({"messages": messages}), 200
     except Exception as e:
+        logger.error(str(e))
         return jsonify({"error": f"Error occured during fetching sent messages: {str(e)}"}), 500
     
 @app.route('/send_message', methods=['POST'])
@@ -234,6 +236,7 @@ def send_message():
         db_handler.insert_message(username, message, reciever)
         return jsonify({"message": "Message sent successfully"})
     except Exception as e:
+        logger.error(str(e))
         return jsonify({"error": f"Error occured during fetching sent messages: {str(e)}"}), 500
 
 if __name__ == '__main__':
