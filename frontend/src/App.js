@@ -149,6 +149,32 @@ function App() {
     }
   };
 
+  const handleFetchingSentMesseges = async () => {
+    if (!localStorage.getItem('accessToken')) {
+      setMessage('You must log in to fetch user list');
+      return;
+    }
+    try {
+      const authorization = localStorage.getItem('accessToken');
+      console.log(authorization)
+      const response = await axios.get(`/get_sent_messages`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authorization}`
+          }
+        }
+      );
+      if (response.data) {
+        setMessage("Bla bla bla");
+      } else {
+        setMessage('No users found.');
+      }
+    } catch (error) {
+      setMessage(`Fetching users failed: ${error.response.data.error}`);
+    }
+  };
+
   return (
     <div className="App">
       <h1>Cognito Auth Frontend</h1>
@@ -167,7 +193,10 @@ function App() {
             <button type="button" onClick={handleLogout}>Log Out</button>
             <div>
               {isTokenPresent && (
-                <button type="button" onClick={handleFetchingUsers}>List of Users</button>
+                <React.Fragment>
+                  <button type="button" onClick={handleFetchingUsers}>List of Users</button>
+                  <button type="button" onClick={handleFetchingSentMesseges}>List of SentMessages</button>
+                </React.Fragment>
               )}
             </div>
         </div>

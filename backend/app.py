@@ -181,6 +181,22 @@ def list_cognito_users():
     except Exception as e:
         return jsonify({"error": f"Error occured during fetching users: {str(e)}"}), 500
 
+@app.route('/get_sent_messages', methods=['GET'])
+def get_sent_messages():
+    access_token = request.headers.get('Authorization')
+    logger.info(access_token)
+    access_token = access_token[7:]
+    if not access_token or validate_token(access_token) is None:
+        return jsonify({"error": f"Authentication required: {str(e)}"}), 400
+    try:
+        data = validate_token(access_token)
+        username_sender = data.get('username')
+        logger.info(db_handler.fetch_messages_send(username_sender))
+        #return db_handler.fetch_messages_send(username_sender)
+        return ""
+    except Exception as e:
+        return jsonify({"error": f"Error occured during fetching sent messages: {str(e)}"}), 500
+
 if __name__ == '__main__':
     port = int(os.getenv('BACKEND_PORT', 5000))
     socketio.run(app, port=port, host='0.0.0.0', allow_unsafe_werkzeug=True)

@@ -98,7 +98,7 @@ class DatabaseHandler:
         FROM 
             messages
         WHERE 
-            (username_sender = {username_sender});
+            username_sender = '{username_sender}';
         """
         try:
             cursor.execute(query)
@@ -117,7 +117,7 @@ class DatabaseHandler:
         FROM 
             messages
         WHERE 
-            (username_reciver = {username_reciver});
+            username_reciver = '{username_reciver}';
         """
         try:
             cursor.execute(query)
