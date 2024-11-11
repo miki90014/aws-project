@@ -197,6 +197,43 @@ def get_sent_messages():
     except Exception as e:
         return jsonify({"error": f"Error occured during fetching sent messages: {str(e)}"}), 500
 
+@app.route('/get_recieved_messages', methods=['GET'])
+def get_recieved_messages():
+    access_token = request.headers.get('Authorization')
+    logger.info(access_token)
+    access_token = access_token[7:]
+    if not access_token or validate_token(access_token) is None:
+        return jsonify({"error": f"Authentication required: {str(e)}"}), 400
+    try:
+        data = validate_token(access_token)
+        username_reciever = data.get('username')
+        logger.info(db_handler.fetch_messages_recived(username_reciever))
+        #return db_handler.fetch_messages_send(username_sender)
+        return ""
+    except Exception as e:
+        return jsonify({"error": f"Error occured during fetching sent messages: {str(e)}"}), 500
+    
+@app.route('/send_message', methods=['POST'])
+def send_message():
+    access_token = request.headers.get('Authorization')
+    logger.info(access_token)
+    access_token = access_token[7:]
+    if not access_token or validate_token(access_token) is None:
+        return jsonify({"error": f"Authentication required: {str(e)}"}), 400
+    try:
+        data = validate_token(access_token)
+        username = data.get('username')
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "Invalid JSON format"}), 400
+        message = data.get('message')
+        reciever = data.get('username_reciever')
+        logger.info(f"Saving send message {message} send by {username} to {reciever}")
+        db_handler.insert_message(username, message, reciever)
+        return jsonify({"message": "Message sent successfully"})
+    except Exception as e:
+        return jsonify({"error": f"Error occured during fetching sent messages: {str(e)}"}), 500
+
 if __name__ == '__main__':
     port = int(os.getenv('BACKEND_PORT', 5000))
     socketio.run(app, port=port, host='0.0.0.0', allow_unsafe_werkzeug=True)

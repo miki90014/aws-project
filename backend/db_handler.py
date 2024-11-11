@@ -65,7 +65,7 @@ class DatabaseHandler:
             id INT AUTO_INCREMENT PRIMARY KEY,
             username_sender VARCHAR(255) NOT NULL,
             message VARCHAR(255) NOT NULL,
-            username_reciver VARCHAR(255) NOT NULL,
+            username_receiver VARCHAR(255) NOT NULL,
             message_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         ) ENGINE = InnoDB
         """
@@ -77,14 +77,14 @@ class DatabaseHandler:
         except Error as e:
             logging.error(f"The error '{e}' occurred while creating the table")
 
-    def insert_message(self, username_sender, message, username_reciver):
+    def insert_message(self, username_sender, message, username_receiver):
         cursor = self.connection.cursor()
         query = """
-        INSERT INTO messages (username_sender, message, username_reciver)
+        INSERT INTO messages (username_sender, message, username_receiver)
         VALUES (%s, %s, %s)
         """
         try:
-            cursor.execute(query, (username_sender, message, username_reciver))
+            cursor.execute(query, (username_sender, message, username_receiver))
             self.connection.commit()
             logging.info("Message inserted successfully")
         except Error as e:
@@ -94,7 +94,7 @@ class DatabaseHandler:
         cursor = self.connection.cursor()
         query = f"""
         SELECT 
-            message, username_reciver, message_date
+            message, username_receiver, message_date
         FROM 
             messages
         WHERE 
@@ -109,7 +109,7 @@ class DatabaseHandler:
             logging.error(f"The error '{e}' occurred while fetching send messages")
             return None
 
-    def fetch_messages_recived(self, username_reciver):
+    def fetch_messages_recived(self, username_receiver):
         cursor = self.connection.cursor()
         query = f"""
         SELECT 
@@ -117,7 +117,7 @@ class DatabaseHandler:
         FROM 
             messages
         WHERE 
-            username_reciver = '{username_reciver}';
+            username_receiver = '{username_receiver}';
         """
         try:
             cursor.execute(query)

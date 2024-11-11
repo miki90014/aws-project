@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-let loggedInUsername;
-
 function App() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
+  const [messageToSent, setMessageToSent] = useState('');
+  const [username_reciever, setReciever] = useState('');
   const [isTokenPresent, setIsTokenPresent] = useState(false);
 
   useEffect(() => {
@@ -62,7 +62,6 @@ function App() {
       localStorage.setItem('accessToken', response.data.AccessToken);
       localStorage.setItem('refreshToken', response.data.RefreshToken);
       //refreshTokenFun();
-      loggedInUsername = username;
       } catch (error) {
         console.log(`Error during signup: ${error.message}`);
         setMessage(`Error during signup: ${error.response.data.error}`);
@@ -168,10 +167,64 @@ function App() {
       if (response.data) {
         setMessage("Bla bla bla");
       } else {
-        setMessage('No users found.');
+        setMessage('No sent messeges found.');
       }
     } catch (error) {
-      setMessage(`Fetching users failed: ${error.response.data.error}`);
+      setMessage(`Fetching sent messages failed: ${error.response.data.error}`);
+    }
+  };
+
+  const handleFetchingRecivedMesseges = async () => {
+    if (!localStorage.getItem('accessToken')) {
+      setMessage('You must log in to fetch user list');
+      return;
+    }
+    try {
+      const authorization = localStorage.getItem('accessToken');
+      console.log(authorization)
+      const response = await axios.get(`/get_recieved_messages`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authorization}`
+          }
+        }
+      );
+      if (response.data) {
+        setMessage("Bla bla bla");
+      } else {
+        setMessage('No recived messeges found.');
+      }
+    } catch (error) {
+      setMessage(`Fetching recived messages failed: ${error.response.data.error}`);
+    }
+  };
+
+
+  const handleSendingMessage = async () => {
+    if (!localStorage.getItem('accessToken')) {
+      setMessage('You must log in to fetch user list');
+      return;
+    }
+    try {
+      const authorization = localStorage.getItem('accessToken');
+      console.log(authorization)
+      const response = await axios.post(`/send_message`,
+        {
+          messageToSent,
+          username_reciever
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authorization}`
+          }
+        }
+      );
+      setMessage('Sent Message successfully');
+      console.log(response.data);
+    } catch (error) {
+      setMessage(`Fetching recived messages failed: ${error.response.data.error}`);
     }
   };
 
@@ -194,8 +247,14 @@ function App() {
             <div>
               {isTokenPresent && (
                 <React.Fragment>
+                  <form id="message-form">
+                      <input type="text" id="message" placeholder="message" onChange={(e) => setMessageToSent(e.target.value)}></input>
+                      <input type="text" id="message_reciever" placeholder="reciever" onChange={(e) => setReciever(e.target.value)}></input>
+                      <button type="button" onClick={handleSendingMessage}>Sent Message</button>
+                  </form>
                   <button type="button" onClick={handleFetchingUsers}>List of Users</button>
-                  <button type="button" onClick={handleFetchingSentMesseges}>List of SentMessages</button>
+                  <button type="button" onClick={handleFetchingSentMesseges}>List of sent messages</button>
+                  <button type="button" onClick={handleFetchingRecivedMesseges}>List of recived messages</button>
                 </React.Fragment>
               )}
             </div>
