@@ -2,20 +2,20 @@ version: '3'
 
 services:
   backend:
-    image: backend
+    image: backend-python
     build:
       context: ./backend
       args:
         BACKEND_PORT: ${BACKEND_PORT}
+    ports:                                #Do usunięcia po debugowaniu
+      - "${BACKEND_PORT}:${BACKEND_PORT}" #Do usunięcia po debugowaniu
     env_file:
       - .env
-      - /opt/elasticbeanstalk/deployment/env.list
     
-
   frontend:
-    image: frontend
+    image: frontend-react
     build:
-      context: ./frontend-react
+      context: ./frontend
       args:
         FRONTEND_PORT: ${FRONTEND_PORT}
     ports:
