@@ -52,7 +52,7 @@ function App() {
       setMessage('Logged successful!');
       localStorage.setItem('accessToken', response.data.AccessToken);
       localStorage.setItem('refreshToken', response.data.RefreshToken);
-      refreshTokenFun();
+      //refreshTokenFun();
       loggedInUsername = username;
       } catch (error) {
         console.log(`Error during signup: ${error.message}`);
@@ -66,10 +66,16 @@ function App() {
       return;
     }
     try {
+      const authorization = localStorage.getItem('accessToken');
+      console.log(authorization)
       const response = await axios.post(`/logout`,
         {
+          authorization
+        },
+        {
           headers: {
-            'Authorization': localStorage.getItem('accessToken'),
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authorization}`
           }
         }
       );

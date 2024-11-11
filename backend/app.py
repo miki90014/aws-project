@@ -33,7 +33,6 @@ def get_jwk(jwks_url):
 jwks_url = f'https://cognito-idp.{region}.amazonaws.com/{user_pool_id}/.well-known/jwks.json'
 jwks = get_jwk(jwks_url)
 
-
 def validate_token(access_token):
     try:
         headers = jwt.get_unverified_header(access_token)
@@ -119,6 +118,7 @@ def refresh_token():
 
     refresh_token = data.get('refreshToken')
     logger.info("Received token refresh request")
+    logger.info(refresh_token)
     try:
         response = cognito_client.initiate_auth(
             AuthFlow='REFRESH_TOKEN_AUTH',
@@ -128,8 +128,7 @@ def refresh_token():
             ClientId=app_client_id
         )
         logger.info("Token refresh successful")
-        response_message = f"Signup successful for user: {data['username']}"
-        return Response(response_message, status=200, mimetype='text/plain')
+        return jsonify({"message": "Refreshed successful"}), 200
     except Exception as e:
         logger.error(f"Error occurred during token refresh: {str(e)}")
         return jsonify({"error": str(e)}), 400
@@ -137,11 +136,10 @@ def refresh_token():
 
 @app.route('/logout', methods=['POST'])
 def logout():
-    logger.info(request.headers)
-    access_token = request.headers.headers.get('Authorization')
+    logger.info( request.headers)
+    access_token = request.headers.get('Authorization')
+    access_token = access_token[7:]
     logger.info(access_token)
-    if access_token is None or validate_token(access_token) is None:
-        return jsonify({"error": "Authentication required"}), 401
     try:
         cognito_client.global_sign_out(AccessToken=access_token)
         logger.info("Logout successful")
