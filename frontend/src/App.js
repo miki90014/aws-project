@@ -243,7 +243,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Cognito Auth Frontend</h1>
+      <h1>App</h1>
       <div id="auth-section">
             <form id="login-form">
                 <input type="text" id="login-username" placeholder="Username" onChange={(e) => setUsername(e.target.value)}></input>
