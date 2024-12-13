@@ -13,5 +13,6 @@ sed -i "s/ENV DATABASE_PASSWORD=.*/ENV DATABASE_PASSWORD=$DATABASE_PASSWORD/" $W
 sed -i "s/ENV DATABASE_PASSWORD=.*/ENV DATABASE_PASSWORD=$DATABASE_PASSWORD/" $WORKSPACE/backend/Dockerfile
 cd $WORKSPACE
 cp /home/ubuntu/.aws/credentials $WORKSPACE/backend
-sudo docker build -t backend-container $WORKSPACE/backend/Dockerfile
-sudo docker run --name backend-container -p ${BACKEND_PORT}:${BACKEND_PORT} backend-python
+cd $WORKSPACE/backend
+sudo docker build -t backend-container .
+sudo docker run --name backend-container -p ${BACKEND_PORT}:${BACKEND_PORT} backend-container
