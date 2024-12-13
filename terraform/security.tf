@@ -17,6 +17,7 @@ resource "aws_vpc_security_group_ingress_rule" "proj_sg_ingress" {
     ssh  = 22
     http = 80
     mysql = 3306
+    backend = 5000
   }
 
   cidr_ipv4   = "0.0.0.0/0"
